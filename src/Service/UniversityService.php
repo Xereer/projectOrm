@@ -2,6 +2,7 @@
 
 namespace Service;
 
+use Entity\Properties;
 use Entity\University;
 use Doctrine\ORM\EntityManager;
 
@@ -13,6 +14,8 @@ class UniversityService
     {
         $universityRepository = $this->entityManager->getRepository(University::class);
         $this->universityRepository = $universityRepository;
+        $propertiesRepository = $this->entityManager->getRepository(Properties::class);
+        $this->propertiesRepository = $propertiesRepository;
     }
 
     public function getAllActiveUniversities()
@@ -76,7 +79,7 @@ class UniversityService
                 $arr[] = array(
                     'id' => $value->getId(),
                     'name' => $value->getName(),
-//                    ...$this->getProperties($value->getId()),
+                    ...$this->getProperties($value->getId()),
                     'child' => $child
                 );
             }
@@ -86,9 +89,9 @@ class UniversityService
     public function getProperties($id)
     {
         $properties = array();
-        $propsValues = $this->propetiesRepository->findPropertiesByUniversityId($id);
+        $propsValues = $this->propertiesRepository->findPropertiesByUniversityId($id);
         foreach ($propsValues as $value) {
-            $properties[$value->getAlias()] = $value->getValue();
+            $properties[$value['alias']] = $value['value'];
         }
         return $properties;
     }

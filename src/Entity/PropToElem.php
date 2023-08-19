@@ -11,11 +11,12 @@ use Repository\PropToElemRepository;
 class PropToElem
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'id')]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     #[ORM\Column(name: 'id_univ')]
-    private $idUniv;
+    private $id_univ;
 
     #[ORM\Column(name: 'propId')]
     private $propId;
@@ -29,9 +30,9 @@ class PropToElem
     #[ORM\Column(name: 'isArchive')]
     private $isArchive;
 
-    #[ManyToOne(targetEntity: Properties::class)]
-    #[JoinColumn(name: 'propId', referencedColumnName: 'id')]
-    private $property;
+//    #[OneToOne(targetEntity: Properties::class,inversedBy: 'proptoelem')]
+//    #[JoinColumn(name: 'propId', referencedColumnName: 'id')]
+//    private Properties|null $properties = null;
 
     public function getId()
     {
@@ -43,7 +44,7 @@ class PropToElem
     }
     public function setIdUniv($idUniv)
     {
-        $this->idUniv = $idUniv;
+        $this->id_univ = $idUniv;
     }
     public function getPropId()
     {

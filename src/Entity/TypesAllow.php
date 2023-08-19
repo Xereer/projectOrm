@@ -11,7 +11,8 @@ use Repository\TypesAllowRepository;
 class TypesAllow
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'id')]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
     #[ORM\Column(name: 'id_prop')]
     private $id_prop;

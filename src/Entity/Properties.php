@@ -24,8 +24,8 @@ class Properties
     #[ORM\Column(name: 'isArchive')]
     private $isArchive;
 
-//    #[ORM\OneToMany(targetEntity: PropToElem::class, mappedBy: 'property')]
-//    private $property;
+//    #[ORM\OneToOne(targetEntity: PropToElem::class, mappedBy: 'properties')]
+//    private PropToElem|null $propToElem = null;
 
     public function getId()
     {

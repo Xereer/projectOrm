@@ -2,8 +2,10 @@
 
 namespace Service;
 
+use Doctrine\Tests\ORM\Functional\Type;
 use Entity\Properties;
 use Entity\PropToElem;
+use Entity\TypesAllow;
 use Entity\University;
 use Doctrine\ORM\EntityManager;
 
@@ -18,10 +20,25 @@ class PropertiesService
         $this->propertiesRepository = $propertiesRepository;
         $propToElemRepository = $this->entityManager->getRepository(PropToElem::class);
         $this->propToElemRepository = $propToElemRepository;
+        $typesAllowRepository = $this->entityManager->getRepository(TypesAllow::class);
+        $this->typesAllowRepository = $typesAllowRepository;
+        $university = $this->entityManager->getRepository(University::class);
+        $this->university = $university;
     }
     public function createNewPropToList ($alias, $name) {
-        $this->propertiesRepository->addNewPropToList($alias, $name);
-        $this->entityManager->flush();
+        $existingEntity = $this->entityManager
+            ->getRepository(Properties::class)
+            ->findOneBy(['alias' => $alias]);
+
+        if (!$existingEntity) {
+            $newEntity = new Properties();
+            $newEntity->setAlias($alias);
+            $newEntity->setName($name);
+            $newEntity->setArchive(0);
+
+            $this->entityManager->persist($newEntity);
+            $this->entityManager->flush();
+        }
     }
     public function deleteProps ($id)
     {
@@ -42,6 +59,53 @@ class PropertiesService
     }
     public function updatePropToElemValue($id,$value)
     {
-        return $this->propToElemRepository->updatePropById($id, $value);
+        $this->propToElemRepository->updatePropById($id, $value);
+    }
+    public function deletePropertyToType($type,$property)
+    {
+        $this->typesAllowRepository->deletePropFromTypesAllow($type,$property);
+        $this->propToElemRepository->deletePropFromPropToElem($type);
+    }
+    public function recoverPropertyToType($type,$property)
+    {
+        $this->typesAllowRepository->recoverPropFromTypesAllow($type,$property);
+        $this->propToElemRepository->recoverPropFromPropToElem($type);
+    }
+    public function findExistingProps($id)
+    {
+        return $this->typesAllowRepository->getExistingProps($id);
+    }
+    public function getAllowProps ($id)
+    {
+        return $this->propertiesRepository->getAllowPropsByElemId ($id);
+    }
+    public function properties ($id)
+    {
+        return $this->propToElemRepository->getPropertiesById($id);
+    }
+    public function findMissingProps ($id)
+    {
+        return $this->propertiesRepository->getMissingProps($id);
+    }
+    public function addPropToType ($id_prop,$typeId)
+    {
+        $prop = new TypesAllow();
+        $prop->setIdProp($id_prop);
+        $prop->setTypeID($typeId);
+        $prop->setIsArchive(0);
+        $this->entityManager->persist($prop);
+        $this->entityManager->flush();
+    }
+    public function createProps($id_univ,$propId,$value)
+    {
+        $typeId = $this->university->getIdAndType($id_univ)[0]['typeID'];
+        $propToElem = new PropToElem();
+        $propToElem->setPropId($propId);
+        $propToElem->setIdUniv($id_univ);
+        $propToElem->setValue($value);
+        $propToElem->setType($typeId);
+        $propToElem->setArchive(0);
+        $this->entityManager->persist($propToElem);
+        $this->entityManager->flush();
     }
 }
