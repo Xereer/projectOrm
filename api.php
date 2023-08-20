@@ -90,7 +90,7 @@ try {
                 $controller->deletePropertyToType($type,$property);
                 break;
         }
-        header('Location: index.php');
+        header('Location: index.html');
     }
 } catch (Throwable $exception) {
     print_r(  $exception->getMessage());
