@@ -13,35 +13,123 @@ class ProductController
     )
     {
     }
+    public function createElem($childType,$childName,$parentId)
+    {
+        $this->universityService->createElement($parentId,$childType,$childName);
+    }
+    public function updateElem($updateId,$newName)
+    {
+        $this->universityService->update($newName, $updateId);
+    }
+    public function deleteElem($deleteId)
+    {
+        $this->universityService->deleteElem($deleteId);
+    }
+    public function recoverElems()
+    {
+        $this->universityService->recover();
+    }
+    public function getProperties ($id)
+    {
+        $propsValues = $this->propertiesService->properties($id);
+        $properties = array();
 
+        foreach ($propsValues as $value) {
+            $properties[$value['id']] = $value['alias'];
+        }
+        session_start();
+        $_SESSION['properties'] = $properties;
+    }
+    public function deleteProperty ($delPropId)
+    {
+        $this->propertiesService->deleteProps($delPropId);
+    }
+    public function updateProperty ($updatePropId,$newVal)
+    {
+        $this->propertiesService->updatePropToElemValue($updatePropId, $newVal);
+    }
+    public function getAllowProperties($id)
+    {
+        $propsValues = $this->propertiesService->getAllowProps($id);
+
+        $allowProperties = array();
+
+        foreach ($propsValues as $value) {
+            $allowProperties[$value['id']] = $value['alias'];
+        }
+        session_start();
+        $_SESSION['allowProperties'] = $allowProperties;
+    }
+    public function createProperty($id, $createPropId,$value)
+    {
+        $this->propertiesService->createProps($id,$createPropId,$value);
+    }
+    public function deletePropFromList($id)
+    {
+        $this->propertiesService->deletePropertyFromList($id);
+        $this->refresh();
+    }
+    public function recoverPropToList($recoverProps)
+    {
+        $this->propertiesService->recoverPropertyToList($recoverProps);
+        $this->refresh();
+    }
+    public function refresh ()
+    {
+        $elem = $this->propertiesService->getAllProperties();
+        $currentProps = array();
+        $deletedProps = array();
+
+        foreach ($elem as $value) {
+            if ($value['isArchive'] == 0) {
+                $currentProps[$value['id']] = $value['alias'];
+            } else {
+                $deletedProps[$value['id']] = $value['alias'];
+            }
+        }
+        session_start();
+        $_SESSION['currentProps'] = $currentProps;
+        $_SESSION['deletedProps'] = $deletedProps;
+    }
+    public function addNewPropertyToList($alias,$name)
+    {
+        $this->propertiesService->createNewPropToList($alias,$name);
+    }
+    public function findMissingProperties($propMissId)
+    {
+        $propsValues = $this->propertiesService->findMissingProps($propMissId);
+
+        $properties = array();
+
+        foreach ($propsValues as $value) {
+            $properties[$value['id']] = $value['alias'];
+        }
+        session_start();
+        $_SESSION['missingProperties'] = $properties;
+    }
+    public function addPropertyToType($type,$property)
+    {
+        $this->propertiesService->addPropToType($property,$type);
+    }
+    public function findExistingProperties($propId)
+    {
+        $propsValues = $this->propertiesService->findExistingProps($propId);
+
+        $properties = array();
+
+        foreach ($propsValues as $value) {
+            $properties[$value['id']] = $value['alias'];
+        }
+        session_start();
+        $_SESSION['existingProperties'] = $properties;
+    }
+    public function deletePropertyToType($type,$property)
+    {
+        $this->propertiesService->deletePropertyToType($type,$property);
+    }
     public function index()
     {
-//        $this->universityService->createElement(66,2,'qwerty');
-//        $this->universityService->update('МЭИ', 66);
-//        $this->universityService->deleteElem(58);
-//        $this->universityService->recover();
-//        $this->propertiesService->createNewPropToList('passs','qwe');
-//        $b = $this->universityService->getAllActiveUniversities();
-//        return $b;
-//        $this->propertiesService->deleteProps(20);
-//        $this->propertiesService->deletePropertyFromList(9);
-//        $this->propertiesService->recoverPropertyToList(9);
-//        $c = $this->propertiesService->getAllProperties(); //тут добавить перебор массива и разделить на активные и неактивные
-//        return $c;
-//        $this->propertiesService->updatePropToElemValue(21, 'qfsdfsdfs');
-//        $this->propertiesService->deletePropertyToType(4,11);
-//        $this->propertiesService->recoverPropertyToType(4,11);
-//        $a = $this->propertiesService->findExistingProps(4);
-//        return $a;
-//        $d = $this->propertiesService->getAllowProps(55);
-//        return $d;
-//        $e = $this->propertiesService->properties(55);
-//        return $e;
-//        $f = $this->propertiesService->findMissingProps(1);
-//        return $f;
-//        $this->propertiesService->addPropToType(11,5);
-//        $this->propertiesService->createProps(64,11,100);
-        // Спросить про insert инъекции
-        // Как распределить выполнение функций в контроллере
+        $b = $this->universityService->getAllActiveUniversities();
+        return json_encode($b);
     }
 }
