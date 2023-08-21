@@ -81,10 +81,10 @@ class ProductController
         $deletedProps = array();
 
         foreach ($elem as $value) {
-            if ($value['isArchive'] == 0) {
-                $currentProps[$value['id']] = $value['alias'];
+            if ($value->getArchive() == 0) {
+                $currentProps[$value->getId()] = $value->getAlias();
             } else {
-                $deletedProps[$value['id']] = $value['alias'];
+                $deletedProps[$value->getId()] = $value->getAlias();
             }
         }
         session_start();
@@ -129,7 +129,7 @@ class ProductController
     }
     public function index()
     {
-        $b = $this->universityService->getAllActiveUniversities();
+        $b = $this->universityService->getAllActiveUniversities(0);
         return json_encode($b);
     }
 }

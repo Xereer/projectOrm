@@ -8,7 +8,7 @@ use Repository\PropertiesRepository;
 
 #[Entity(repositoryClass: PropertiesRepository::class)]
 #[ORM\Table(name: 'properties')]
-class Properties
+class PropertiesEntity
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: 'integer')]
@@ -38,6 +38,7 @@ class Properties
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
     public function getAlias()
     {
@@ -46,6 +47,7 @@ class Properties
     public function setAlias($alias)
     {
         $this->alias = $alias;
+        return $this;
     }
     public function getArchive()
     {
@@ -54,5 +56,6 @@ class Properties
     public function setArchive($isArchive)
     {
         $this->isArchive = $isArchive;
+        return $this;
     }
 }

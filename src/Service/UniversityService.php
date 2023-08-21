@@ -2,7 +2,7 @@
 
 namespace Service;
 
-use Entity\Properties;
+use Entity\PropertiesEntity;
 use Entity\UniversityEntity;
 use Doctrine\ORM\EntityManager;
 use Repository\PropertiesRepository;
@@ -13,7 +13,7 @@ class UniversityService
 
     private readonly UniversityRepository $universityRepository;
 
-    private readonly PropertiesRepository $propertiesRepository;
+//    private readonly PropertiesRepository $propertiesRepository;
 
     public function __construct(
         private EntityManager $entityManager
@@ -21,30 +21,28 @@ class UniversityService
     {
         $universityRepository = $this->entityManager->getRepository(UniversityEntity::class);
         $this->universityRepository = $universityRepository;
-        $propertiesRepository = $this->entityManager->getRepository(Properties::class);
-        $this->propertiesRepository = $propertiesRepository;
     }
 
     public function getAllActiveUniversities($parentId)
     {
         $univ = $this->universityRepository->findActiveUniversities();
-        $universities = $this->read($univ, $parentId);
+        $universities = $this->getElements($univ, $parentId);
         return $universities;
     }
     public function createElement($parentID,$childType,$childName)
     {
-        //проверка на архивность
-        //на обычный find
-        $type = $this->universityRepository->getIdAndType($parentID)[0];
-        if (isset($parentID) && $type['typeID'] + 1 != $childType) {
+        $type = $this->universityRepository->findBy([
+            'id' => $parentID,
+            'isArchive' => 0
+            ])[0]->getType();
+        if (isset($parentID) && $type + 1 != $childType) {
             throw new Exception('ошибка заполнения');
         }
         //setter chain
         $university = new UniversityEntity();
-        $university->setParentID($parentID);
-        $university->setType($childType);
-        $university->setName($childName)
-            ->setArchive(0);
+        $university->setParentID($parentID)
+            ->setType($childType)
+            ->setName($childName);
         $this->entityManager->persist($university);
         $this->entityManager->flush();
         $this->entityManager->commit();
@@ -54,14 +52,14 @@ class UniversityService
         $university = $this->universityRepository->findBy([
             'id' => $id,
             'isArchive' => 0
-        ]);
+        ])[0];
         $this->entityManager->beginTransaction();
         $university->setName($newName);
-        $this->entityManager->pesrsit();
+        $this->entityManager->persist($university);
         $this->entityManager->flush();
         $this->entityManager->commit();
     }
-    public function deleteElem ($deleteId)
+    public function deleteElem($deleteId)
     {
         try {
             $this->entityManager->beginTransaction();
@@ -85,12 +83,12 @@ class UniversityService
     {
         $this->universityRepository->recoverElements();
     }
-    public function read($elem, $parentId)
+    public function getElements($elem, $parentId)
     {
         $arr = array();
         foreach ($elem as $value) {
             if ($value->getParentId() == $parentId) {
-                $child = $this->read($elem, $value->getId());
+                $child = $this->getElements($elem, $value->getId());
 
                 if (!empty($child)) {
                     $value->child = $child;
@@ -107,6 +105,8 @@ class UniversityService
     }
     public function getProperties($id)
     {
+        $propertiesRepository = $this->entityManager->getRepository(PropertiesEntity::class);
+        $this->propertiesRepository = $propertiesRepository;
         $properties = array();
         $propsValues = $this->propertiesRepository->findPropertiesByUniversityId($id);
         foreach ($propsValues as $value) {

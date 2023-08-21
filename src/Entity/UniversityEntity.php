@@ -21,7 +21,7 @@ class UniversityEntity
     #[ORM\Column(name: 'name')]
     private $name;
     #[ORM\Column(name: 'isArchive', type: 'integer', options: ['default' => 0])]
-    private $isArchive;
+    private int $isArchive = 0;
 
     public function getName()
     {
@@ -43,6 +43,7 @@ class UniversityEntity
     public function setType($type)
     {
         $this->typeID = $type;
+        return $this;
     }
     public function getParentId()
     {
@@ -51,13 +52,15 @@ class UniversityEntity
     public function setParentId($parentId)
     {
         $this->parentID = $parentId;
+        return $this;
     }
-    public function getArhcive()
+    public function getArchive()
     {
         return $this->isArchive;
     }
     public function setArchive($isArchive)
     {
         $this->isArchive = $isArchive;
+        return $this;
     }
 }

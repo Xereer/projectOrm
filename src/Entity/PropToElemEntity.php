@@ -8,7 +8,7 @@ use Repository\PropToElemRepository;
 
 #[Entity(repositoryClass: PropToElemRepository::class)]
 #[ORM\Table(name: 'proptoelem')]
-class PropToElem
+class PropToElemEntity
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: 'integer')]
@@ -28,7 +28,7 @@ class PropToElem
     private $typeId;
 
     #[ORM\Column(name: 'isArchive')]
-    private $isArchive;
+    private int $isArchive = 0;
 
 //    #[OneToOne(targetEntity: Properties::class,inversedBy: 'proptoelem')]
 //    #[JoinColumn(name: 'propId', referencedColumnName: 'id')]
@@ -45,6 +45,7 @@ class PropToElem
     public function setIdUniv($idUniv)
     {
         $this->id_univ = $idUniv;
+        return $this;
     }
     public function getPropId()
     {
@@ -53,6 +54,7 @@ class PropToElem
     public function setPropId($propId)
     {
         $this->propId = $propId;
+        return $this;
     }
     public function getType()
     {
@@ -61,6 +63,7 @@ class PropToElem
     public function setType($typeId)
     {
         $this->typeId = $typeId;
+        return $this;
     }
     public function getArchive()
     {
@@ -69,6 +72,7 @@ class PropToElem
     public function setArchive($isArchive)
     {
         $this->isArchive = $isArchive;
+        return $this;
     }
     public function getValue()
     {
@@ -77,5 +81,6 @@ class PropToElem
     public function setValue($value)
     {
         $this->value = $value;
+        return $this;
     }
 }

@@ -8,7 +8,7 @@ use Repository\TypesAllowRepository;
 
 #[Entity(repositoryClass: TypesAllowRepository::class)]
 #[ORM\Table(name: 'typesallow')]
-class TypesAllow
+class TypesAllowEntity
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: 'integer')]
@@ -19,7 +19,7 @@ class TypesAllow
     #[ORM\Column(name: 'typeId')]
     private $typeId;
     #[ORM\Column(name: 'isArchive')]
-    private $isArchive;
+    private int $isArchive = 0;
 
     public function getId()
     {
@@ -43,15 +43,18 @@ class TypesAllow
     public function setIdProp($id_prop)
     {
         $this->id_prop = $id_prop;
+        return $this;
     }
 
     public function setTypeID($typeId)
     {
         $this->typeId = $typeId;
+        return $this;
     }
 
     public function setIsArchive($isArchive)
     {
         $this->isArchive = $isArchive;
+        return $this;
     }
 }

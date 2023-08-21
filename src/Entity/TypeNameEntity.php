@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping\Entity;
 
 #[Entity]
 #[ORM\Table(name: 'typename')]
-class TypeName
+class TypeNameEntity
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id')]
@@ -27,5 +27,6 @@ class TypeName
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 }

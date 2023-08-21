@@ -14,23 +14,7 @@ class UniversityRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function getIdAndType($id)
-    {
-        return $this->createQueryBuilder('u')
-            ->select('u.id','u.typeID')
-            ->where('u.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getResult();
-    }
-    public function addNewElement($parentID,$childType,$childName)
-    {
-        $university = new UniversityEntity();
-        $university->setParentID($parentID);
-        $university->setType($childType);
-        $university->setName($childName);
-        $university->setArchive(0);
-    }
+
     public function getIdByParentId($parentId)
     {
         return $this->createQueryBuilder('u')
