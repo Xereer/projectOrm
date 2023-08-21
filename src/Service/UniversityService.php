@@ -2,6 +2,7 @@
 
 namespace Service;
 
+use Doctrine\DBAL\Exception;
 use Entity\PropertiesEntity;
 use Entity\UniversityEntity;
 use Doctrine\ORM\EntityManager;
@@ -13,34 +14,39 @@ class UniversityService
 
     private readonly UniversityRepository $universityRepository;
 
-//    private readonly PropertiesRepository $propertiesRepository;
-
     public function __construct(
-        private EntityManager $entityManager
+        private readonly EntityManager $entityManager
     )
     {
+        /** @var UniversityRepository $universityRepository */
         $universityRepository = $this->entityManager->getRepository(UniversityEntity::class);
         $this->universityRepository = $universityRepository;
     }
 
-    public function getAllActiveUniversities($parentId)
+    public function getAllActiveUniversities($parentId): array
     {
-        $univ = $this->universityRepository->findActiveUniversities();
-        $universities = $this->getElements($univ, $parentId);
-        return $universities;
+        $univ = $this->universityRepository->findBy(['isArchive' => 0]);
+        return $this->mapElements($univ, $parentId);
     }
-    public function createElement($parentID,$childType,$childName)
+    public function createElement($parentID, $childType, $childName)
     {
-        $type = $this->universityRepository->findBy([
-            'id' => $parentID,
-            'isArchive' => 0
-            ])[0]->getType();
-        if (isset($parentID) && $type + 1 != $childType) {
+        if (empty($parentID)) {
+            $parentID = 0;
+        }
+        if (empty($childName)) {
             throw new Exception('ошибка заполнения');
         }
-        //setter chain
-        $university = new UniversityEntity();
-        $university->setParentID($parentID)
+        $type = $this->universityRepository->findOneBy([
+            'id' => $parentID,
+            'isArchive' => 0
+            ])->getType();
+
+        if ($type + 1 != $childType){
+            throw new Exception('ошибка заполнения');
+        }
+        $this->entityManager->beginTransaction();
+        $university = (new UniversityEntity())
+            ->setParentID($parentID)
             ->setType($childType)
             ->setName($childName);
         $this->entityManager->persist($university);
@@ -49,10 +55,10 @@ class UniversityService
     }
     public function update($newName, $id)
     {
-        $university = $this->universityRepository->findBy([
+        $university = $this->universityRepository->findOneBy([
             'id' => $id,
             'isArchive' => 0
-        ])[0];
+        ]);
         $this->entityManager->beginTransaction();
         $university->setName($newName);
         $this->entityManager->persist($university);
@@ -66,7 +72,7 @@ class UniversityService
             $this->delete($deleteId);
             $this->entityManager->flush();
             $this->entityManager->commit();
-        } catch (Execution $e) {
+        } catch (Exception $e) {
             $this->entityManager->rollback();
         }
 
@@ -75,7 +81,7 @@ class UniversityService
     {
         $child = $this->universityRepository->getIdByParentId($parentId);
         foreach ($child as $value) {
-            $this -> delete($value['id']);
+            $this->delete($value['id']);
         }
         $this->universityRepository->deleteElement($parentId);
     }
@@ -83,12 +89,12 @@ class UniversityService
     {
         $this->universityRepository->recoverElements();
     }
-    public function getElements($elem, $parentId)
+    public function mapElements($elem, $parentId): array
     {
         $arr = array();
         foreach ($elem as $value) {
             if ($value->getParentId() == $parentId) {
-                $child = $this->getElements($elem, $value->getId());
+                $child = $this->mapElements($elem, $value->getId());
 
                 if (!empty($child)) {
                     $value->child = $child;
@@ -103,12 +109,12 @@ class UniversityService
         }
         return $arr;
     }
-    public function getProperties($id)
+    public function getProperties($id): array
     {
+        /** @var PropertiesRepository $propertiesRepository */
         $propertiesRepository = $this->entityManager->getRepository(PropertiesEntity::class);
-        $this->propertiesRepository = $propertiesRepository;
         $properties = array();
-        $propsValues = $this->propertiesRepository->findPropertiesByUniversityId($id);
+        $propsValues = $propertiesRepository->findPropertiesByUniversityId($id);
         foreach ($propsValues as $value) {
             $properties[$value['alias']] = $value['value'];
         }

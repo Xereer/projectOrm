@@ -31,7 +31,7 @@ class ProductController
     }
     public function getProperties ($id)
     {
-        $propsValues = $this->propertiesService->properties($id);
+        $propsValues = $this->propertiesService->propertiesToElement($id);
         $properties = array();
 
         foreach ($propsValues as $value) {

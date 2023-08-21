@@ -10,28 +10,27 @@ use Doctrine\ORM\EntityManager;
 use Repository\PropertiesRepository;
 use Repository\PropToElemRepository;
 use Repository\TypesAllowRepository;
-use Repository\UniversityRepository;
 
 
 class PropertiesService
 {
-
     private readonly PropertiesRepository $propertiesRepository;
 
     private readonly PropToElemRepository $propToElemRepository;
 
     private readonly  TypesAllowRepository $typesAllowRepository;
 
-    private readonly UniversityRepository $university;
-
     public function __construct(
-        private EntityManager $entityManager
+        private readonly EntityManager $entityManager
     )
     {
+        /** @var PropertiesRepository $propertiesRepository */
         $propertiesRepository = $this->entityManager->getRepository(PropertiesEntity::class);
         $this->propertiesRepository = $propertiesRepository;
+        /** @var PropToElemRepository $propToElemRepository */
         $propToElemRepository = $this->entityManager->getRepository(PropToElemEntity::class);
         $this->propToElemRepository = $propToElemRepository;
+        /** @var TypesAllowRepository $typesAllowRepository */
         $typesAllowRepository = $this->entityManager->getRepository(TypesAllowEntity::class);
         $this->typesAllowRepository = $typesAllowRepository;
     }
@@ -40,8 +39,10 @@ class PropertiesService
         $existingEntity = $this->entityManager->getRepository(PropertiesEntity::class)->findOneBy(['alias' => $alias]);
 
         if (!$existingEntity) {
-            $newEntity = new PropertiesEntity();
-            $newEntity->setAlias($alias)->setName($name);
+            $this->entityManager->beginTransaction();
+            $newEntity = (new PropertiesEntity())
+                ->setAlias($alias)
+                ->setName($name);
 
             $this->entityManager->persist($newEntity);
             $this->entityManager->flush();
@@ -50,10 +51,10 @@ class PropertiesService
     }
     public function deleteProps($id)
     {
-        $property = $this->propToElemRepository->findBy([
+        $property = $this->propToElemRepository->findOneBy([
             'id' => $id,
             'isArchive' => 0
-        ])[0];
+        ]);
         $this->entityManager->beginTransaction();
         $property->setArchive(1);
         $this->entityManager->persist($property);
@@ -62,10 +63,10 @@ class PropertiesService
     }
     public function deletePropertyFromList($id)
     {
-        $property = $this->propertiesRepository->findBy([
+        $property = $this->propertiesRepository->findOneBy([
             'id' => $id,
             'isArchive' => 0
-        ])[0];
+        ]);
         $this->entityManager->beginTransaction();
         $property->setArchive(1);
         $this->entityManager->persist($property);
@@ -74,10 +75,10 @@ class PropertiesService
     }
     public function recoverPropertyToList($id)
     {
-        $property = $this->propertiesRepository->findBy([
+        $property = $this->propertiesRepository->findOneBy([
             'id' => $id,
             'isArchive' => 1
-        ])[0];
+        ]);
         $this->entityManager->beginTransaction();
         $property->setArchive(0);
         $this->entityManager->persist($property);
@@ -90,61 +91,60 @@ class PropertiesService
         $properties = $this->propertiesRepository->findAll();
         return $properties;
     }
-    public function updatePropToElemValue($id,$value)
+    public function updatePropToElemValue($id, $value)
     {
-        $property = $this->propToElemRepository->findBy([
+        $property = $this->propToElemRepository->findOneBy([
             'id' => $id,
             'isArchive' => 0
-        ])[0];
+        ]);
         $this->entityManager->beginTransaction();
         $property->setValue($value);
         $this->entityManager->persist($property);
         $this->entityManager->flush();
         $this->entityManager->commit();
     }
-    public function deletePropertyToType($type,$property)
+    public function deletePropertyToType($type, $property)
     {
         $this->typesAllowRepository->deletePropFromTypesAllow($type,$property);
         $this->propToElemRepository->deletePropFromPropToElem($type);
     }
-    public function recoverPropertyToType($type,$property)
+    public function recoverPropertyToType($type, $property)
     {
         $this->typesAllowRepository->recoverPropFromTypesAllow($type,$property);
         $this->propToElemRepository->recoverPropFromPropToElem($type);
     }
-    public function findExistingProps($id)
+    public function findExistingProps($id): array
     {
         return $this->typesAllowRepository->getExistingProps($id);
     }
-    public function getAllowProps($id)
+    public function getAllowProps($id): array
     {
         return $this->propertiesRepository->getAllowPropsByElemId ($id);
     }
-    public function properties($id)
+    public function propertiesToElement($id): array
     {
         return $this->propToElemRepository->getPropertiesById($id);
     }
-    public function findMissingProps($id)
+    public function findMissingProps($id): array
     {
         return $this->propertiesRepository->getMissingProps($id);
     }
     public function addPropToType ($id_prop,$typeId)
     {
+        $this->entityManager->beginTransaction();
         $prop = new TypesAllowEntity();
         $prop->setIdProp($id_prop)->setTypeID($typeId);
         $this->entityManager->persist($prop);
         $this->entityManager->flush();
         $this->entityManager->commit();
     }
-    public function createProps($id_univ,$propId,$value)
+    public function createProps($id_univ, $propId, $value)
     {
-        $university = $this->entityManager->getRepository(UniversityEntity::class);
-        $this->university = $university;
-        $typeId = $this->university->findBy([
-            'id' => $id_univ,
-            'isArchive' => 0
-        ])[0]->getType();
-
+        $typeId  = $this->entityManager->getRepository(UniversityEntity::class)->findOneBy([
+        'id' => $id_univ,
+        'isArchive' => 0
+        ])->getType();
+        $this->entityManager->beginTransaction();
         $propToElem = new PropToElemEntity();
         $propToElem->setPropId($propId)
             ->setIdUniv($id_univ)
