@@ -11,9 +11,7 @@
 <pre id="json-output"></pre>
 
 <script>
-    fetch('api.php')
-        .then(response => response.json())
-        .then(data => {
+    fetch('api.php').then(response => response.json()).then(data => {
             const jsonOutputDiv = document.getElementById('json-output');
             jsonOutputDiv.textContent = JSON.stringify(data, null, 4);
         })

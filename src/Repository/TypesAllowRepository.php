@@ -4,7 +4,6 @@ namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Entity\Properties;
-use Entity\PropToElem;
 use Entity\TypesAllow;
 
 class TypesAllowRepository extends EntityRepository

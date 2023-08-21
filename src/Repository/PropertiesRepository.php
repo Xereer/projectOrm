@@ -102,7 +102,7 @@ class PropertiesRepository extends EntityRepository
         $qb = $this->createQueryBuilder('p');
         $qb->select('p.id', 'p.alias');
 
-        $sub = $this->createQueryBuilder('sub') // Указываем псевдоним для подзапроса
+        $sub = $this->createQueryBuilder('sub')
         ->select('t.id')
             ->from(TypesAllow::class, 't')
             ->where('t.id_prop = p.id')
