@@ -22,7 +22,7 @@ class Properties
     private $name;
 
     #[ORM\Column(name: 'isArchive')]
-    private $isArchive;
+    private int $isArchive = 0;
 
 //    #[ORM\OneToOne(targetEntity: PropToElem::class, mappedBy: 'properties')]
 //    private PropToElem|null $propToElem = null;

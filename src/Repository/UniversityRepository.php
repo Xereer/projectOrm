@@ -3,7 +3,7 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Entity\University;
+use Entity\UniversityEntity;
 
 class UniversityRepository extends EntityRepository
 {
@@ -25,24 +25,11 @@ class UniversityRepository extends EntityRepository
     }
     public function addNewElement($parentID,$childType,$childName)
     {
-        $university = new University();
+        $university = new UniversityEntity();
         $university->setParentID($parentID);
         $university->setType($childType);
         $university->setName($childName);
         $university->setArchive(0);
-    }
-    public function updateElement($newName, $id)
-    {
-        return $this->createQueryBuilder('u')
-            ->update()
-            ->set('u.name', ':newName')
-            ->where('u.id = :id')
-            ->andWhere('u.isArchive = :isArchive')
-            ->setParameter('newName', $newName)
-            ->setParameter('id', $id)
-            ->setParameter('isArchive', 0)
-            ->getQuery()
-            ->getResult();
     }
     public function getIdByParentId($parentId)
     {

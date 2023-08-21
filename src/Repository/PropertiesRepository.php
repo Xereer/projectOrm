@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Entity\Properties;
 use Entity\PropToElem;
 use Entity\TypesAllow;
-use Entity\University;
+use Entity\UniversityEntity;
 
 class PropertiesRepository extends EntityRepository
 {
@@ -73,6 +73,7 @@ class PropertiesRepository extends EntityRepository
     }
     public function getAllProps()
     {
+        //архивность
         return $this->createQueryBuilder('p')
             ->select('p.id','p.alias', 'p.isArchive')
             ->getQuery()
@@ -83,12 +84,10 @@ class PropertiesRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('p');
         $qb->select('p.alias', 'p.id')
-            ->leftJoin(TypesAllow::class, 't', 'WITH', 'p.id = t.id_prop')
-            ->leftJoin(University::class, 'u', 'WITH', 't.typeId = u.typeID')
+            ->leftJoin(TypesAllow::class, 't', 'WITH', 'p.id = t.id_prop and t.isArchive = 0')
+            ->leftJoin(UniversityEntity::class, 'u', 'WITH', 't.typeId = u.typeID and u.isArchive = 0')
             ->leftJoin(PropToElem::class, 'pt', 'WITH', 'pt.propId = p.id AND pt.id_univ = u.id')
             ->where('p.isArchive = 0')
-            ->andWhere('t.isArchive = 0')
-            ->andWhere('u.isArchive = 0')
             ->andWhere('u.id = :id')
             ->andWhere($qb->expr()->orX(
                 'pt.propId IS NULL',

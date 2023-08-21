@@ -6,12 +6,25 @@ use Doctrine\Tests\ORM\Functional\Type;
 use Entity\Properties;
 use Entity\PropToElem;
 use Entity\TypesAllow;
-use Entity\University;
+use Entity\UniversityEntity;
 use Doctrine\ORM\EntityManager;
+use Repository\PropertiesRepository;
+use Repository\PropToElemRepository;
+use Repository\TypesAllowRepository;
+use Repository\UniversityRepository;
 
 
 class PropertiesService
 {
+
+    private readonly PropertiesRepository $propertiesRepository;
+
+    private readonly PropToElemRepository $propToElemRepository;
+
+    private readonly  TypesAllowRepository $typesAllowRepository;
+
+    private readonly UniversityRepository $university;
+
     public function __construct(
         private EntityManager $entityManager
     )
@@ -22,25 +35,23 @@ class PropertiesService
         $this->propToElemRepository = $propToElemRepository;
         $typesAllowRepository = $this->entityManager->getRepository(TypesAllow::class);
         $this->typesAllowRepository = $typesAllowRepository;
-        $university = $this->entityManager->getRepository(University::class);
+        $university = $this->entityManager->getRepository(UniversityEntity::class);
         $this->university = $university;
     }
-    public function createNewPropToList ($alias, $name) {
-        $existingEntity = $this->entityManager
-            ->getRepository(Properties::class)
-            ->findOneBy(['alias' => $alias]);
+    public function createNewPropToList($alias, $name) {
+        $existingEntity = $this->entityManager->getRepository(Properties::class)->findOneBy(['alias' => $alias]);
 
         if (!$existingEntity) {
             $newEntity = new Properties();
             $newEntity->setAlias($alias);
             $newEntity->setName($name);
-            $newEntity->setArchive(0);
 
             $this->entityManager->persist($newEntity);
             $this->entityManager->flush();
+            $this->entityManager->commit();
         }
     }
-    public function deleteProps ($id)
+    public function deleteProps($id)
     {
         $this->propToElemRepository->deletePropById($id);
     }

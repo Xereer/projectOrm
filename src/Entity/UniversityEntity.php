@@ -8,7 +8,7 @@ use Repository\UniversityRepository;
 
 #[Entity(repositoryClass: UniversityRepository::class)]
 #[ORM\Table(name: 'university')]
-class University
+class UniversityEntity
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: 'integer')]
@@ -30,6 +30,7 @@ class University
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
     public function getId()
     {
