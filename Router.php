@@ -1,26 +1,33 @@
 <?php
 
-class Router {
+
+class Router
+{
+    private $request;
 
     public function __construct(private $container)
     {
+        require_once __DIR__.'/Request.php';
+        $this->request = new Request($_SERVER["REQUEST_METHOD"], $_SERVER['REQUEST_URI'], $_POST);
     }
 
-    public function handleRequest() {
+    public function handleRequest()
+    {
 
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && $_SERVER['REQUEST_URI']) {
+        if ($this->request->getMethod() == "POST" && $this->request->getPath()) {
 
-            $request = $_SERVER['REQUEST_URI'];
+            $requestPath = $this->request->getPath();
 
-            $query = parse_url($request, PHP_URL_QUERY);
+            $query = parse_url($requestPath, PHP_URL_QUERY);
             parse_str($query, $path);
 
             $action = $path['act'];
             $method = $path['method'];
-            $controllerName = 'Controller'.'\\'.$action.'Controller';
-            if (class_exists($controllerName)){
+            $controllerName = 'Controller' . '\\' . $action . 'Controller';
+            if (class_exists($controllerName)) {
+
                 $controller = $this->container->get($controllerName);
-                $controller->$method();
+                $controller->$method($this->request);
             }
 
             header('Location: index.html');
