@@ -24,3 +24,4 @@ $connection = DriverManager::getConnection($dbParams, $config);
 $entityManager = new EntityManager($connection, $config);
 $container = new ContainerClass();
 $container->set(EntityManager::class, $entityManager);
+$controllerPath = __DIR__.'/../src/Controller/';

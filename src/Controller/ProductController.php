@@ -4,6 +4,7 @@ namespace Controller;
 
 use Service\PropertiesService;
 use Service\UniversityService;
+use Request;
 
 class ProductController
 {
@@ -13,24 +14,28 @@ class ProductController
     )
     {
     }
-    public function createElem($childType,$childName,$parentId)
+    public function createElem(Request $request)
     {
-        $this->universityService->createElement($parentId,$childType,$childName);
+        $this->universityService->createElement($request->get('parentID'),$request->get('childType'),$request->get('childName'));
     }
-    public function updateElem($updateId,$newName)
+    public function updateElem()
     {
+        $updateId = $_POST['updateId'];
+        $newName = $_POST['newName'];
         $this->universityService->update($newName, $updateId);
     }
-    public function deleteElem($deleteId)
+    public function deleteElem()
     {
+        $deleteId = $_POST['deleteId'];
         $this->universityService->deleteElem($deleteId);
     }
     public function recoverElems()
     {
         $this->universityService->recover();
     }
-    public function getProperties ($id)
+    public function getProperties()
     {
+        $id = $_POST['elemId'];
         $propsValues = $this->propertiesService->propertiesToElement($id);
         $properties = array();
 
@@ -40,16 +45,20 @@ class ProductController
         session_start();
         $_SESSION['properties'] = $properties;
     }
-    public function deleteProperty ($delPropId)
+    public function deleteProperty()
     {
+        $delPropId = $_POST['delPropId'];
         $this->propertiesService->deleteProps($delPropId);
     }
-    public function updateProperty ($updatePropId,$newVal)
+    public function updateProperty()
     {
+        $updatePropId = $_POST['UpdatePropId'];
+        $newVal = $_POST['newVal'];
         $this->propertiesService->updatePropToElemValue($updatePropId, $newVal);
     }
-    public function getAllowProperties($id)
+    public function getAllowProperties()
     {
+        $id = $_POST['elemId'];
         $propsValues = $this->propertiesService->getAllowProps($id);
 
         $allowProperties = array();
@@ -60,21 +69,26 @@ class ProductController
         session_start();
         $_SESSION['allowProperties'] = $allowProperties;
     }
-    public function createProperty($id, $createPropId,$value)
+    public function createProperty()
     {
+        $createPropId = $_POST['createPropId'];
+        $value = $_POST['value'];
+        $id = $_POST['id'];
         $this->propertiesService->createProps($id,$createPropId,$value);
     }
-    public function deletePropFromList($id)
+    public function deletePropFromList()
     {
+        $id = $_POST['deleteProps'];
         $this->propertiesService->deletePropertyFromList($id);
         $this->refresh();
     }
-    public function recoverPropToList($recoverProps)
+    public function recoverPropToList()
     {
+        $recoverProps = $_POST['recoverProps'];
         $this->propertiesService->recoverPropertyToList($recoverProps);
         $this->refresh();
     }
-    public function refresh ()
+    public function refresh()
     {
         $elem = $this->propertiesService->getAllProperties();
         $currentProps = array();
@@ -91,12 +105,15 @@ class ProductController
         $_SESSION['currentProps'] = $currentProps;
         $_SESSION['deletedProps'] = $deletedProps;
     }
-    public function addNewPropertyToList($alias,$name)
+    public function addNewPropertyToList()
     {
+        $alias = $_POST['alias'];
+        $name = $_POST['name'];
         $this->propertiesService->createNewPropToList($alias,$name);
     }
-    public function findMissingProperties($propMissId)
+    public function findMissingProperties()
     {
+        $propMissId = $_POST['propMissId'];
         $propsValues = $this->propertiesService->findMissingProps($propMissId);
 
         $properties = array();
@@ -107,12 +124,15 @@ class ProductController
         session_start();
         $_SESSION['missingProperties'] = $properties;
     }
-    public function addPropertyToType($type,$property)
+    public function addPropertyToType()
     {
+        $type = $_POST['type'];
+        $property = $_POST['property'];
         $this->propertiesService->addPropToType($property,$type);
     }
-    public function findExistingProperties($propId)
+    public function findExistingProperties()
     {
+        $propId = $_POST['propId'];
         $propsValues = $this->propertiesService->findExistingProps($propId);
 
         $properties = array();
@@ -123,8 +143,10 @@ class ProductController
         session_start();
         $_SESSION['existingProperties'] = $properties;
     }
-    public function deletePropertyToType($type,$property)
+    public function deletePropertyToType()
     {
+        $type = $_POST['type'];
+        $property = $_POST['property'];
         $this->propertiesService->deletePropertyToType($type,$property);
     }
     public function index()

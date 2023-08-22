@@ -20,14 +20,14 @@
         });
 </script>
 <hr>
-<form method="post" action="api.php?action=properties">
+<form method="post" action="api.php?act=Product&method=getProperties">
     <label for="inputId">id элемента:</label>
     <input type="text" name="elemId">
     <input type="submit" value="Поиск">
 </form>
 <br>
 
-<form method="post" action="api.php?action=deleteProps">
+<form method="post" action="api.php?act=Product&method=deleteProperty">
     <select id="propertySelect" name="delPropId">
         <?php
         session_start();
@@ -43,7 +43,7 @@
     <button type="sumbit">Удалить свойство</button>
 </form>
 <br>
-<form method="post" action="api.php?action=updateProps">
+<form method="post" action="api.php?act=Product&method=updateProperty">
     <select id="propertySelect" name="UpdatePropId">
         <?php
         session_start();
@@ -60,13 +60,13 @@
     <button type="sumbit">Изменить свойство</button>
 </form>
 <br>
-<form method="post" action="api.php?action=getAllowProps">
+<form method="post" action="api.php?act=Product&method=getAllowProperties">
     <label for="inputId">id элемента:</label>
     <input type="text" name="elemId">
     <input type="submit" value="Поиск">
 </form>
 <br>
-<form method="post" action="api.php?action=createProperty">
+<form method="post" action="api.php?act=Product&method=createProperty">
     <select id="propertySelect" name="createPropId">
         <?php
         session_start();
@@ -87,7 +87,7 @@
 </form>
 <br>
 <hr>
-<form method="post" action="api.php?action=deletePropsFromList">
+<form method="post" action="api.php?act=Product&method=deletePropFromList">
     <select id="propertySelect" name="deleteProps">
         <?php
         session_start();
@@ -102,7 +102,7 @@
     </select>
     <button type="sumbit">Удалить свойство из справочника</button>
 </form>
-<form method="post" action="api.php?action=recoverPropsToList">
+<form method="post" action="api.php?act=Product&method=recoverPropToList">
     <select id="propertySelect" name="recoverProps">
         <?php
         session_start();
@@ -117,11 +117,11 @@
     </select>
     <button type="sumbit">Восстановить свойства</button>
 </form>
-<form action="api.php?action=refresh" method="post">
+<form action="api.php?act=Product&method=refresh" method="post">
     <button type="sumbit">Обновить</button>
 </form>
 <br>
-<form method="post" action="api.php?action=addNewPropToList">
+<form method="post" action="api.php?act=Product&method=addNewPropertyToList">
     <label for="inputId">Псевдоним</label>
     <input type="text" name="alias">
     <label for="inputId">Название</label>
@@ -129,7 +129,7 @@
     <button type="sumbit">Добавить</button>
 </form>
 <br>
-<form method="post" action="api.php?action=findMissingProps">
+<form method="post" action="api.php?act=Product&method=findMissingProperties">
     <label for="inputId">Тип:</label>
     <select id="propertySelect" name="propMissId">
         <option value="1">Университет</option>
@@ -140,7 +140,7 @@
     </select>
     <input type="submit" value="Поиск">
 </form>
-<form method="post" action="api.php?action=addPropToType">
+<form method="post" action="api.php?act=Product&method=addPropertyToType">
     <label for="inputId">Тип</label>
     <select id="propertySelect" name="type">
         <option value="1">Университет</option>
@@ -164,7 +164,7 @@
     </select>
     <button type="sumbit">Добавить свойство для типа</button>
 </form>
-<form method="post" action="api.php?action=findExistingProps">
+<form method="post" action="api.php?act=Product&method=findExistingProperties">
     <label for="inputId">Тип:</label>
     <select id="propertySelect" name="propId">
         <option value="1">Университет</option>
@@ -175,7 +175,7 @@
     </select>
     <input type="submit" value="Поиск">
 </form>
-<form method="post" action="api.php?action=deletePropToType">
+<form method="post" action="api.php?act=Product&method=deletePropertyToType">
     <label for="inputId">Тип</label>
     <select id="propertySelect" name="type">
         <option value="1">Университет</option>
@@ -202,7 +202,7 @@
 
 <hr>
 
-<form action="api.php?action=create" method="post">
+<form action="api.php?act=Product&method=createElem" method="post">
     <p>id родителя</p>
     <input type="text" name="parentID">
     <p>Новый элемент</p>
@@ -220,7 +220,7 @@
 
 <hr>
 
-<form action="api.php?action=update" method="post">
+<form action="api.php?act=Product&method=updateElem" method="post">
     <p>id названия</p>
     <input type="text" name="updateId">
     <p>Новое название</p>
@@ -230,13 +230,13 @@
 
 <hr>
 
-<form action="api.php?action=delete" method="post">
+<form action="api.php?act=Product&method=deleteElem" method="post">
     <p>id</p>
     <input type="text" name="deleteId">
     <p><button type="sumbit">Удалить</button></p>
 </form>
 
-<form action="api.php?action=recover" method="post">
+<form action="api.php?act=Product&method=recoverElems" method="post">
     <p><button type="sumbit">Восстановить</button></p>
 </form>
 
