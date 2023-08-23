@@ -8,7 +8,7 @@ class Router
     public function __construct(private $container)
     {
         require_once __DIR__.'/Request.php';
-        $this->request = new Request($_SERVER["REQUEST_METHOD"], $_SERVER['REQUEST_URI'], $_POST);
+        $this->request = new Request($_SERVER["REQUEST_METHOD"], $_SERVER['REQUEST_URI'], $_POST, $_GET);
     }
 
     public function handleRequest()
